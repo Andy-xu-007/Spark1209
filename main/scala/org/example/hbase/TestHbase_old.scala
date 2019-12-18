@@ -13,7 +13,7 @@ object TestHbase_old {
     // 屏蔽不必要的日志显示在终端上
 
     // 创建SparkConf
-    val sparkConf = new SparkConf().setAppName("WordCount").setMaster("local[*]")
+    val sparkConf = new SparkConf().setAppName("TestHbase_old").setMaster("local[*]")
 
     // 创建sparkContext对象
     val sc = new SparkContext(sparkConf)

@@ -8,7 +8,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 object MYSQLRDD {
   def main(args: Array[String]): Unit = {
     // 创建SparkConf
-    val sparkConf = new SparkConf().setAppName("WordCount").setMaster("local[*]")
+    val sparkConf = new SparkConf().setAppName("MYSQLRDD").setMaster("local[*]")
 
     // 创建sparkContext对象
     val sc = new SparkContext(sparkConf)
