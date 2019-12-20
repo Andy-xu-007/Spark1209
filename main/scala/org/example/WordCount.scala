@@ -21,7 +21,7 @@ object WordCount {
     // 单词 =》 元组
     val wordAndOne: RDD[(String, Int)] = words.map((_,1))
 
-    // 统计单词
+    // 按K聚合，统计单词
     val wordAndCount: RDD[(String,Int)] = wordAndOne.reduceByKey(_+_)
 
     // 保存到文件
