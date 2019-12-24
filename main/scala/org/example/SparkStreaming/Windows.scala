@@ -1,13 +1,10 @@
 package org.example.SparkStreaming
 
-import org.apache.spark.SparkConf
+import org.apache.spark.{SparkConf, streaming}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.streaming.dstream.{DStream, ReceiverInputDStream}
 
-/**
- * 有状态转换
- */
-object UPdateStateByKey {
+object Windows {
   def main(args: Array[String]): Unit = {
     // 创建SparkConf
     val sparkConf: SparkConf = new SparkConf().setAppName("UPdateStateByKey").setMaster("local[*]")
@@ -26,21 +23,18 @@ object UPdateStateByKey {
     // 单词 =》 元组
     val wordAndOne: DStream[(String, Int)] = wordDStream.map((_,1))
 
-    val update: (Seq[Int], Option[Int]) => Some[Int] = (values:Seq[Int], status:Option[Int]) => {
-      // 当前批次内容的计算
-      val sum = values.sum
-      // 取出状态信息中上一次状态
-      val lastStatus = status.getOrElse(0)
-      Some(sum + lastStatus)
-    }
+    // 窗口操作（窗口大小6，滑动步长3）
+    val wordAndCount = wordAndOne.reduceByKeyAndWindow(
+      (x: Int, y: Int) => x + y,   // reduceFunc
+      // (a: Int, b: Int) => a - b,   // invReduceFunc，上次的状态加上本次多出来的，再减去上次多出来的
+      Seconds(6),
+      Seconds(3)
+    )
 
-    // 有状态转换
-    val wordAndCount: DStream[(String, Int)] = wordAndOne.updateStateByKey(update)
-
+    // 打印
     wordAndCount.print
 
     ssc.start()
     ssc.awaitTermination()
-
   }
 }
